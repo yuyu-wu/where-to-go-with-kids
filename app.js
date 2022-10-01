@@ -32,6 +32,14 @@ app.get('/places/new', (req, res) => {
     res.render('places/new')
 })
 
+app.get('/register', (req, res) => {
+    res.render('users/register')
+})
+
+app.get('/login', (req, res) => {
+    res.render('users/login')
+})
+
 app.listen(3000, () => {
     console.log('Listening on 3000!')
 })
