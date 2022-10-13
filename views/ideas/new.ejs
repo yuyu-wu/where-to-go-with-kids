@@ -1,12 +1,12 @@
 <% layout('layouts/boilerplate') %>
     <div class="container">
         <div class="row">
-            <h1 class="text-center">Add a place to go</h1>
+            <h1 class="text-center">Add A New Idea</h1>
             <div class="col-4 offset-4">
-                <form action="/places" method="POST" novalidate class="validated-form">
+                <form action="/ideas" method="POST" novalidate class="validated-form">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
-                        <input type="text" id="title" name="place[title]" class="form-control" required>
+                        <input type="text" id="title" name="idea[title]" class="form-control" required>
                         <!-- <div class="valid-feedback">Looks good!</div> -->
                     </div>
 
@@ -14,16 +14,16 @@
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea type="text" id="description" name="place[description]" class="form-control"
+                        <textarea type="text" id="description" name="idea[description]" class="form-control"
                             required></textarea>
                     </div>
                     <div class="mb-3">
-                        <button class="btn btn-success">Add a place to go</button>
+                        <button class="btn btn-success">Add A New Idea</button>
                     </div>
 
                 </form>
                 <div class="mb-4">
-                    <a href="/places">Back to All Places</a>
+                    <a href="/ideas">Back to All Ideas</a>
                 </div>
 
             </div>

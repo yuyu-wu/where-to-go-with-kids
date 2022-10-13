@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate')%>
+    <h1>All Weekend Ideas</h1>
+    <div>
+        <a href="/ideas/new">Add A Weekend Idea</a>
+    </div>
+
+    <% for (let idea of ideas) { %>
+        <div class="card mb-3">
+            <div class="row">
+                
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title"><%=idea.title%></h5>
+                        
+                        <p class="card-text"><%=idea.description%></p>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>

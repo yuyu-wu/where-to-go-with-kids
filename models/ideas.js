@@ -12,3 +12,4 @@ const ideaSchema = new Schema({
 
 const Idea = mongoose.model('Idea', ideaSchema);
 module.exports = Idea;
+
