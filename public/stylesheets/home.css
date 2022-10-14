@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 body {
     height: 100vh;
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -6,10 +8,16 @@ body {
     background-position: center;
     text-shadow: 0 0.05rem 0.1rem rgba(0,0,0,0.5);
     box-shadow: inset 0 0 5rem rgba(0,0,0,0.5);
+    /* font-family: "Poppins", sans-serif; */
 }
 
 .cover-container {
     max-width: 60vw;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
 }
 
 .nav-link {
@@ -32,5 +40,7 @@ body {
 
 .btn-secondary, .btn-secondary:hover {
     color: #333;
+    /* opacity: 0.2; */
     text-shadow: none;
 }
+
