@@ -1,9 +1,7 @@
 <% layout('layouts/boilerplate')%>
 
     <div class="row">
-        <!-- <div class="col-6"> -->
-          
-
+        <div class="col-6 offset-3">
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -13,18 +11,13 @@
                         <%=idea.description%>
                     </p>
                 </div>
-                
-               
+
+                <div class="card-body">
+                    <a class="card-link btn btn-info" href="/ideas/<%=idea._id%>/edit">Edit</a>
+                    <form class="d-inline" action="/ideas/<%=idea._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
             </div>
+        </div>
     </div>
-        
-
-    <!-- </div> -->
-
-
-
-
-
-
-
-    <!-- We don't want to allow a user to enter any sort of script anywhere in any of our fields -->

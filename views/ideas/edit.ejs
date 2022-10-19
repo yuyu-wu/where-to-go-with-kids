@@ -1,0 +1,22 @@
+<% layout('layouts/boilerplate')%>
+    <div class="row">
+        <h1 class="text-center">Edit Idea</h1>
+        <div class="col-6 offset-3">
+            <form action="/ideas/<%=idea._id%>?method=PUT" method="POST">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="idea[title]" value="<%=idea.title%>">
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" type="text" name="idea[description]" id="description" cols="30" rows="10"><%=idea.description%></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-info">Update Idea</button>
+                </div>
+            </form>
+            <a href="/ideas">Back To Weekend Ideas</a>
+        </div>
+    </div>

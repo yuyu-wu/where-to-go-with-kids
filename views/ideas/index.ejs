@@ -1,38 +1,44 @@
 <% layout('layouts/boilerplate')%>
+<div class="col-6 offset-3">
     <h1>All Weekend Ideas</h1>
     <div>
         <!-- <a href="/ideas/new">Add A Weekend Idea</a> -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#newIdeaModal">
             Add A Weekend Idea
-          </button>
+        </button>
     </div>
 
+    
     <% for (let idea of ideas) { %>
         <div class="card mb-3">
             <div class="row">
-                
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="card-body">
                         <h5 class="card-title"><%=idea.title%></h5>
-                        
                         <p class="card-text"><%=idea.description%></p>
                        
-                        <a class="btn btn-primary" href="/ideas/<%=idea._id%>">View <%=idea.title%></a>
+                        <!-- <a class="btn btn-primary" href="/ideas/<%=idea._id%>">View <%=idea.title%></a> -->
+                        <a class="card-link btn btn-info" href="/ideas/<%=idea._id%>/edit">Edit</a>
+                        <form class="d-inline" action="/ideas/<%=idea._id%>?_method=DELETE" method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <% } %>
+    <% } %>
+</div>
 
 
     <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="newIdeaModal" tabindex="-1" aria-labelledby="newIdeaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <h1 class="modal-title fs-5" id="newIdeaModalLabel"></h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body">
             <div class="container">
                 <div class="row">
@@ -44,28 +50,22 @@
                                 <input type="text" id="title" name="idea[title]" class="form-control" required>
                             </div>
         
-                            
-        
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea type="text" id="description" name="idea[description]" class="form-control"
-                                    required></textarea>
+                                <textarea type="text" id="description" name="idea[description]" class="form-control" required></textarea>
                             </div>
-                            <!-- <div class="mb-3">
+                            <div class="mb-3">
                                 <button class="btn btn-success">Add A New Idea</button>
-                            </div> -->
-        
+                            </div>
                         </form>
-                       
-        
                     <!-- </div> -->
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
+        <!-- <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Add A New Idea</button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

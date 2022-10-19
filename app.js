@@ -20,10 +20,9 @@ mongoose.connection.on('error', err => {
     console.log(err)
 })
 
+app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-app.engine('ejs', engine);
 
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
@@ -63,8 +62,17 @@ app.get('/ideas/:id/edit', async (req, res) => {
 
 app.put('/ideas/:id', async (req, res) => {
     const {id} = req.params;
-    const idea = await Idea.findByIdAndUpdate(id, )
+    const idea = await Idea.findByIdAndUpdate(id, {...req.body.idea});
+    res.redirect(`/ideas/${idea._id}`);
+    // res.send(req.params)
 })
+
+app.delete('/ideas/:id', async (req, res) => {
+    const {id} = req.params;
+    await Idea.findByIdAndDelete(id);
+    res.redirect('/ideas');
+})
+
 app.get('/register', (req, res) => {
     res.render('users/register')
 })
