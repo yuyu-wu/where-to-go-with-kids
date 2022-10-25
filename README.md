@@ -19,9 +19,4 @@ This is a MERN stack app built with Express.
 - Javascript
 
 ### Features
-- Food ordering page
-- LocalStorage to keep track of added items
-- Shopping cart calculations and removal
-- Responsive
-- Nabvar toggling
-
+- Handles errors in Express

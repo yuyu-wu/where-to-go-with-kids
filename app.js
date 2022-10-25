@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const Idea = require('./models/idea');
 const catchAsync = require('./error/catchAsync');
 const ExpressError = require('./error/ExpressError');
+const ideaSchema = require('./schemas.js');
 
 mongoose.connect('mongodb://localhost:27017/weekend')
     .then(() => {
@@ -30,6 +31,16 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const validateIdea = (req, res, next) => {
+    const {error} = ideaSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home')
 });
@@ -43,10 +54,10 @@ app.get('/ideas', catchAsync(async (req, res) => {
     res.render('ideas/index', {ideas});
 }));
 
-app.post('/ideas', catchAsync(async (req, res) => {
-    if (!req.body.idea) {
-        throw new ExpressError('Invalid Idea Data', 404);
-    }
+app.post('/ideas', validateIdea, catchAsync(async (req, res) => {
+    // if (!req.body.idea) {
+    //     throw new ExpressError('Invalid Idea Data', 404);
+    // }
     const idea = new Idea(req.body.idea);
     await idea.save();
     res.redirect('/ideas')
@@ -65,11 +76,11 @@ app.get('/ideas/:id/edit', catchAsync(async (req, res) => {
     res.render('ideas/edit', {idea});
 }));
 
-app.put('/ideas/:id', catchAsync(async (req, res) => {
+app.put('/ideas/:id', validateIdea, catchAsync(async (req, res) => {
     const {id} = req.params;
     const idea = await Idea.findByIdAndUpdate(id, {...req.body.idea});
-    res.redirect(`/ideas/${idea._id}`);
-    // res.send(req.params)
+    res.redirect(`/ideas`);
+    // res.send('it worked!!!')
 }));
 
 app.delete('/ideas/:id', catchAsync(async (req, res) => {
@@ -96,6 +107,7 @@ app.use((err, req, res, next) => {
         err.message = 'Something went wrong!';
     }
     res.status(statusCode).render('error', {err});
+    // res.status(statusCode).send('oh no')
 });
 
 app.listen(3000, () => {

@@ -2,15 +2,15 @@
     <div class="row">
         <h1 class="text-center">Edit Idea</h1>
         <div class="col-6 offset-3">
-            <form action="/ideas/<%=idea._id%>?method=PUT" method="POST">
+            <form action="/ideas/<%=idea._id%>?_method=PUT" method="POST" novalidate class="validated-form">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="idea[title]" value="<%=idea.title%>">
+                    <input type="text" class="form-control" id="title" name="idea[title]" value="<%=idea.title%>" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" type="text" name="idea[description]" id="description" cols="30" rows="10"><%=idea.description%></textarea>
+                    <textarea class="form-control" type="text" name="idea[description]" id="description" cols="30" rows="10" required><%=idea.description%></textarea>
                 </div>
 
                 <div class="mb-3">
@@ -20,3 +20,5 @@
             <a href="/ideas">Back To Weekend Ideas</a>
         </div>
     </div>
+
+    
