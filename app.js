@@ -7,7 +7,9 @@ const methodOverride = require('method-override');
 const Idea = require('./models/idea');
 const catchAsync = require('./error/catchAsync');
 const ExpressError = require('./error/ExpressError');
-const ideaSchema = require('./schemas.js');
+const {ideaSchema} = require('./schemas.js');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 mongoose.connect('mongodb://localhost:27017/weekend')
     .then(() => {
@@ -30,6 +32,25 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+const sessionConfig = {
+    secret: 'thissecretistobeupdated',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+app.use(session(sessionConfig));
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 const validateIdea = (req, res, next) => {
     const {error} = ideaSchema.validate(req.body);
@@ -60,12 +81,14 @@ app.post('/ideas', validateIdea, catchAsync(async (req, res) => {
     // }
     const idea = new Idea(req.body.idea);
     await idea.save();
-    res.redirect('/ideas')
+    req.flash('success', 'Successfully created a new weekend idea');
+    res.redirect('/ideas');
 }));
 
 app.get('/ideas/:id', catchAsync(async(req, res) => {
     const idea = await Idea.findById(req.params.id)
     if (!idea) {
+        req.flash('error', 'Cannot find the weekend idea');
         return res.redirect('/ideas');
     }
     res.render('ideas/show', {idea});
@@ -73,12 +96,17 @@ app.get('/ideas/:id', catchAsync(async(req, res) => {
 
 app.get('/ideas/:id/edit', catchAsync(async (req, res) => {
     const idea = await Idea.findById(req.params.id);
+    if (!idea) {
+        req.flash('error', 'Cannot find the weekend idea');
+        return res.redirect('/ideas');
+    }
     res.render('ideas/edit', {idea});
 }));
 
 app.put('/ideas/:id', validateIdea, catchAsync(async (req, res) => {
     const {id} = req.params;
     const idea = await Idea.findByIdAndUpdate(id, {...req.body.idea});
+    req.flash('success', 'Successfully updated the weekend idea');
     res.redirect(`/ideas`);
     // res.send('it worked!!!')
 }));
