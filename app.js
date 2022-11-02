@@ -10,6 +10,10 @@ const ExpressError = require('./error/ExpressError');
 const {ideaSchema} = require('./schemas.js');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+const {isLoggedIn} = require('./middleware');
 
 mongoose.connect('mongodb://localhost:27017/weekend')
     .then(() => {
@@ -46,7 +50,15 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
@@ -61,13 +73,17 @@ const validateIdea = (req, res, next) => {
         next();
     }
 }
-
+// app.get('/fakeuser', async(req, res) => {
+//     const user = new User({email: 'colt@mail.com', username: 'colt'})
+//     const newUser = await User.register(user, 'chicken')
+//     res.send(newUser)
+// })
 app.get('/', (req, res) => {
-    res.render('home')
+    res.render('home');
 });
 
-app.get('/ideas/new', (req, res) => {
-    res.render('ideas/new')
+app.get('/ideas/new', isLoggedIn, (req, res) => {
+    res.render('ideas/new');
 });
 
 app.get('/ideas', catchAsync(async (req, res) => {
@@ -75,7 +91,7 @@ app.get('/ideas', catchAsync(async (req, res) => {
     res.render('ideas/index', {ideas});
 }));
 
-app.post('/ideas', validateIdea, catchAsync(async (req, res) => {
+app.post('/ideas', isLoggedIn, validateIdea, catchAsync(async (req, res) => {
     // if (!req.body.idea) {
     //     throw new ExpressError('Invalid Idea Data', 404);
     // }
@@ -94,7 +110,7 @@ app.get('/ideas/:id', catchAsync(async(req, res) => {
     res.render('ideas/show', {idea});
 }));
 
-app.get('/ideas/:id/edit', catchAsync(async (req, res) => {
+app.get('/ideas/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const idea = await Idea.findById(req.params.id);
     if (!idea) {
         req.flash('error', 'Cannot find the weekend idea');
@@ -103,7 +119,7 @@ app.get('/ideas/:id/edit', catchAsync(async (req, res) => {
     res.render('ideas/edit', {idea});
 }));
 
-app.put('/ideas/:id', validateIdea, catchAsync(async (req, res) => {
+app.put('/ideas/:id', isLoggedIn, validateIdea, catchAsync(async (req, res) => {
     const {id} = req.params;
     const idea = await Idea.findByIdAndUpdate(id, {...req.body.idea});
     req.flash('success', 'Successfully updated the weekend idea');
@@ -111,22 +127,57 @@ app.put('/ideas/:id', validateIdea, catchAsync(async (req, res) => {
     // res.send('it worked!!!')
 }));
 
-app.delete('/ideas/:id', catchAsync(async (req, res) => {
+app.delete('/ideas/:id', isLoggedIn, catchAsync(async (req, res) => {
     const {id} = req.params;
     await Idea.findByIdAndDelete(id);
+    req.flash('success', 'Successfully deleted weekend idea');
     res.redirect('/ideas');
 }));
 
 app.get('/register', (req, res) => {
-    res.render('users/register')
+    res.render('users/register');
 });
+
+app.post('/register', catchAsync(async(req, res, next) => {
+    try {
+        const {username, password, email} = req.body;
+        const user = new User({username, email});
+        const registeredUser = await User.register(user, password);
+        req.login(registeredUser, err => {
+            if (err) {
+                return next(err);
+            }
+            req.flash('success', 'Successfully created a new account');
+            res.redirect('/ideas');
+        })
+    } catch(e) {
+        req.flash('error', e.message);
+        res.redirect('register');
+    }
+    
+}))
 
 app.get('/login', (req, res) => {
-    res.render('users/login')
+    res.render('users/login');
 });
 
+app.post('/login', passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), (req, res) => {
+    req.flash('success', 'Welcome back');
+    res.redirect('/ideas');
+})
+
+app.get('/logout', (req, res, next) => {
+    req.logout(err => {
+        if (err) {
+            return next(err);
+        }
+        req.flash('success', 'Successfully logged out');
+        res.redirect('/ideas');
+    });
+})
+
 app.all('*', (req, res, next) => {
-    next(new ExpressError('Page Not Found', 404))
+    next(new ExpressError('Page Not Found', 404));
 });
 
 app.use((err, req, res, next) => {
