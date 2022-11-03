@@ -7,13 +7,13 @@ const methodOverride = require('method-override');
 const Idea = require('./models/idea');
 const catchAsync = require('./error/catchAsync');
 const ExpressError = require('./error/ExpressError');
-const {ideaSchema} = require('./schemas.js');
+
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-const {isLoggedIn} = require('./middleware');
+const {isLoggedIn, validateIdea, isAuthor} = require('./middleware');
 
 mongoose.connect('mongodb://localhost:27017/weekend')
     .then(() => {
@@ -64,15 +64,6 @@ app.use((req, res, next) => {
     next();
 })
 
-const validateIdea = (req, res, next) => {
-    const {error} = ideaSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
 // app.get('/fakeuser', async(req, res) => {
 //     const user = new User({email: 'colt@mail.com', username: 'colt'})
 //     const newUser = await User.register(user, 'chicken')
@@ -96,13 +87,16 @@ app.post('/ideas', isLoggedIn, validateIdea, catchAsync(async (req, res) => {
     //     throw new ExpressError('Invalid Idea Data', 404);
     // }
     const idea = new Idea(req.body.idea);
+    idea.author = req.user._id;
     await idea.save();
     req.flash('success', 'Successfully created a new weekend idea');
     res.redirect('/ideas');
 }));
 
 app.get('/ideas/:id', catchAsync(async(req, res) => {
-    const idea = await Idea.findById(req.params.id)
+    const idea = await Idea.findById(req.params.id).populate('author');
+    console.log(idea);
+    console.log(req.user)
     if (!idea) {
         req.flash('error', 'Cannot find the weekend idea');
         return res.redirect('/ideas');
@@ -110,8 +104,9 @@ app.get('/ideas/:id', catchAsync(async(req, res) => {
     res.render('ideas/show', {idea});
 }));
 
-app.get('/ideas/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
-    const idea = await Idea.findById(req.params.id);
+app.get('/ideas/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+    const {id} = req.params;
+    const idea = await Idea.findById(id);
     if (!idea) {
         req.flash('error', 'Cannot find the weekend idea');
         return res.redirect('/ideas');
@@ -119,15 +114,16 @@ app.get('/ideas/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     res.render('ideas/edit', {idea});
 }));
 
-app.put('/ideas/:id', isLoggedIn, validateIdea, catchAsync(async (req, res) => {
+app.put('/ideas/:id', isLoggedIn, isAuthor, validateIdea, catchAsync(async (req, res) => {
     const {id} = req.params;
-    const idea = await Idea.findByIdAndUpdate(id, {...req.body.idea});
+   
+    await Idea.findByIdAndUpdate(id, {...req.body.idea});
     req.flash('success', 'Successfully updated the weekend idea');
     res.redirect(`/ideas`);
     // res.send('it worked!!!')
 }));
 
-app.delete('/ideas/:id', isLoggedIn, catchAsync(async (req, res) => {
+app.delete('/ideas/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const {id} = req.params;
     await Idea.findByIdAndDelete(id);
     req.flash('success', 'Successfully deleted weekend idea');
@@ -163,6 +159,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), (req, res) => {
     req.flash('success', 'Welcome back');
+    console.log(req.user)
     res.redirect('/ideas');
 })
 

@@ -7,7 +7,8 @@ const ideaSchema = new Schema({
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    // image: String
 })
 
 const Idea = mongoose.model('Idea', ideaSchema);

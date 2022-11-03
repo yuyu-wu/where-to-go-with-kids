@@ -10,14 +10,23 @@
                     <p class="card-text">
                         <%=idea.description%>
                     </p>
+                    <% if (idea.author) { %>
+                        <p class="card-text">
+                            <%=idea.author.username%>
+                        </p>
+                    <% } %>
                 </div>
 
+                <% if (currentUser && idea.author._id.equals(currentUser._id)) { %>
                 <div class="card-body">
-                    <a class="card-link btn btn-info" href="/ideas/<%=idea._id%>/edit">Edit</a>
+                    <a class="card-link btn btn-outline-info me-3" href="/ideas/<%=idea._id%>/edit">Edit</a>
                     <form class="d-inline" action="/ideas/<%=idea._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-danger">Delete</button>
+                        <button class="btn btn-outline-danger">Delete</button>
                     </form>
                 </div>
+                <% } %>
+
             </div>
+            <a href="/ideas" class="text-decoration-none">Back To Weekend Ideas</a>
         </div>
     </div>

@@ -1,4 +1,5 @@
 <% layout('layouts/boilerplate') %> 
+<div class="col-6 offset-3">
 <h1>Register</h1>
 <form action="/register" method="POST" class="validated-form" novalidate>
     <div class="mb-3">
@@ -13,10 +14,11 @@
         <label for="password" class="form-label">Password</label>
         <input type="password" id="password" name="password" class="form-control" required>
     </div>
-    <button class="btn btn-success">
+    <button class="btn btn-outline-success">
         Register
     </button>
 </form>
+</div>
 
 
   

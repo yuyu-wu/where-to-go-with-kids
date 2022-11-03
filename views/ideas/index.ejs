@@ -1,9 +1,9 @@
 <% layout('layouts/boilerplate')%>
     <div class="col-6 offset-3">
-        <h1>All Weekend Ideas</h1>
-        <div>
+        <h1 class="mb-3">All Weekend Ideas</h1>
+        <div class="mb-3">
             <!-- <a href="/ideas/new">Add A Weekend Idea</a> -->
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#newIdeaModal">
+            <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#newIdeaModal">
                 Add A Weekend Idea
             </button>
         </div>
@@ -14,18 +14,24 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card-body">
-                            <a href="/ideas/<%=idea._id%>"><h5 class="card-title">
+                            <a href="/ideas/<%=idea._id%>" class="text-decoration-none"><h5 class="card-title">
                                 <%=idea.title%>
                             </h5></a>
                             <p class="card-text">
                                 <%=idea.description%>
                             </p>
-
-                            <!-- <a class="btn btn-primary" href="/ideas/<%=idea._id%>">View <%=idea.title%></a> -->
-                            <a class="card-link btn btn-info" href="/ideas/<%=idea._id%>/edit">Edit</a>
+                            <% if (idea.author) { %>
+                                <p class="card-text">
+                                    <%=idea.author.username%>
+                                </p>
+                            <% } %>
+                            
+                            <% if (currentUser && idea.author._id.equals(currentUser._id)) { %>
+                            <a class="card-link btn btn-outline-info me-3" href="/ideas/<%=idea._id%>/edit">Edit</a>
                             <form class="d-inline" action="/ideas/<%=idea._id%>?_method=DELETE" method="POST">
-                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn btn-outline-danger">Delete</button>
                             </form>
+                            <% } %>
                         </div>
                     </div>
                 </div>
