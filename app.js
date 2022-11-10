@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV != 'production') {
+    require('dotenv').config();
+}
+console.log(process.env.SECRET);
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -7,13 +12,13 @@ const methodOverride = require('method-override');
 const Idea = require('./models/idea');
 const catchAsync = require('./error/catchAsync');
 const ExpressError = require('./error/ExpressError');
-
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const {isLoggedIn, validateIdea, isAuthor} = require('./middleware');
+const mongoSanitize = require('express-mongo-sanitize');
 
 mongoose.connect('mongodb://localhost:27017/weekend')
     .then(() => {
@@ -36,13 +41,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(mongoSanitize());  // prevent mongo injection
 
 const sessionConfig = {
     secret: 'thissecretistobeupdated',
     resave: false,
     saveUninitialized: true,
     cookie: {
-        httpOnly: true,
+        name: 'session',
+        httpOnly: true,  // our session cookies are only accessible over http (not through JS)
+        // secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
@@ -58,6 +66,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
+    console.log(req.query)
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
