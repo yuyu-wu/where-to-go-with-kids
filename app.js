@@ -20,7 +20,7 @@ const User = require('./models/user');
 const {isLoggedIn, validateIdea, isAuthor} = require('./middleware');
 const mongoSanitize = require('express-mongo-sanitize');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/weekend';
-
+// check git commit
 const MongoStore = require('connect-mongo');  // store sessions in mongo instead of memory
 
 mongoose.connect(dbUrl)
