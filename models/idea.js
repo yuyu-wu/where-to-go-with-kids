@@ -8,7 +8,6 @@ const ideaSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    // image: String
 })
 
 const Idea = mongoose.model('Idea', ideaSchema);
