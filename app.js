@@ -19,8 +19,11 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const {isLoggedIn, validateIdea, isAuthor} = require('./middleware');
 const mongoSanitize = require('express-mongo-sanitize');
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/weekend';
 
-mongoose.connect('mongodb://localhost:27017/weekend')
+const MongoStore = require('connect-mongo');  // store sessions in mongo instead of memory
+
+mongoose.connect(dbUrl)
     .then(() => {
         console.log('Mongo connection open!')
     })
@@ -41,10 +44,25 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(mongoSanitize());  // prevent mongo injection
+app.use(mongoSanitize());  // prevent mongo injection
+
+const secret = process.env.SECRET || 'thisisasecret';
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret
+    }
+});
+
+store.on('error', function(e) {
+    console.log('SESSION STORE ERROR', e);
+})
 
 const sessionConfig = {
-    secret: 'thissecretistobeupdated',
+    store,
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
