@@ -1,0 +1,6 @@
+---
+deployment: 
+  tasks:
+    - export DEPLOYPATH=/home/yuyuwude/repositories/where-to-go-with-kids
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp styles.css $DEPLOYPATH
