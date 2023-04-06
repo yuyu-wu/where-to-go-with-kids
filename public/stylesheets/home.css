@@ -6,13 +6,13 @@ body {
     url("https://images.unsplash.com/photo-1612392987205-c53f0200a175?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY2Mzc0MTM1MA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1080");
     background-size: cover;
     background-position: center;
-    text-shadow: 0 0.05rem 0.1rem rgba(0,0,0,0.5);
     box-shadow: inset 0 0 5rem rgba(0,0,0,0.5);
-    /* font-family: "Poppins", sans-serif; */
+    font-family: "Poppins", sans-serif;
+    flex-direction: column;
 }
 
 .cover-container {
-    max-width: 60vw;
+    display: flex;
 }
 
 header {
@@ -20,12 +20,16 @@ header {
     justify-content: space-between;
 }
 
+nav {
+    display: flex;
+}
+
 .nav-link {
     padding: 0.25rem 0;
-    font-weight: 700;
     color: rgba(255,255,255,0.5);
+    letter-spacing: .13rem;
     margin-left: 1rem;
-    border-bottom: 0.25rem solid transparent;
+    border-bottom: 0.1rem solid transparent;
 }
 
 .nav-link:hover {
@@ -38,9 +42,18 @@ header {
     border-bottom-color: white;
 }
 
-.btn-secondary, .btn-secondary:hover {
-    color: #333;
-    /* opacity: 0.2; */
-    text-shadow: none;
+main {
+    max-width: 60vw;
+    align-self: center;
 }
+
+.btn-secondary {
+    color: #333;
+    font-size: 1.1rem;
+    padding: 10px 25px;
+    text-shadow: none;
+    background-color: white;
+    background-color: rgba(255,255,255,0.8)
+}
+
 
