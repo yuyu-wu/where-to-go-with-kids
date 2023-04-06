@@ -12,22 +12,22 @@
           <li class="nav-item">
             <a class="nav-link" href="/ideas">Weekend Ideas</a>
           </li>
-          
         </ul>
-          <ul class="navbar-nav ms-auto">
-            <% if(!currentUser) { %>
+
+        <ul class="navbar-nav ms-auto">
+          <% if(!currentUser) { %>
             <li class="nav-item">
               <a class="nav-link" href="/login">Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/register">Register</a>
             </li>
-            <% } else { %>
+          <% } else { %>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li>
-            <% } %>
-          </ul>
+          <% } %>
+        </ul>
       </div>
     </div>
-  </nav>
+</nav>
